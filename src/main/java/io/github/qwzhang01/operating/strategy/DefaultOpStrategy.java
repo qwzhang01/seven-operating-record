@@ -1,65 +1,73 @@
 package io.github.qwzhang01.operating.strategy;
 
 /**
- * Default Operation Recording Strategy.
- * 
- * This is a no-op implementation of {@link OpStrategy} that provides default
- * behavior for operation recording. It doesn't perform any actual recording
- * but serves as a placeholder and base implementation.
- * 
- * <p>Users should extend or replace this class with their own implementation
- * to provide actual operation recording functionality, such as:
- * <ul>
- *   <li>Logging to a database</li>
- *   <li>Writing to audit logs</li>
- *   <li>Sending to a message queue</li>
- *   <li>Triggering notifications</li>
- * </ul>
- * 
- * <p>This class is automatically registered as a Spring bean by
- * {@link io.github.qwzhang01.operating.config.OperationRecordConfig}
- * and can be overridden by defining a custom bean in your application context.
+ * Default Implementation of Operation Recording Strategy.
+ * <p>
+ * This is a no-op implementation of {@link OpStrategy} that serves as a
+ * placeholder when no custom strategy is specified. All methods simply delegate
+ * to their parent interface's default implementations, which do nothing.
+ *
+ * <p>This strategy uses {@code Void} for all type parameters, indicating that
+ * it doesn't process any specific data types. Users should create their own
+ * implementations with appropriate type parameters for their use cases.
+ *
+ * <p>To create a custom strategy:
+ * <pre>
+ * public class MyStrategy implements OpStrategy&lt;MyDto, MyEntity, Boolean&gt; {
+ *     &#64;Override
+ *     public MyEntity beforeAction(MyDto args) {
+ *         // Custom implementation
+ *     }
+ *
+ *     &#64;Override
+ *     public void afterAction(MyEntity oldData, MyDto newData) {
+ *         // Custom implementation
+ *     }
+ * }
+ * </pre>
+ *
+ * @author avinzhang
+ * @see OpStrategy
  */
-public class DefaultOpStrategy implements OpStrategy<Void> {
-    
-    /**
-     * Default implementation that returns null.
-     * Override this method to capture data before method execution.
-     * 
-     * @return null by default
-     */
+public class DefaultOpStrategy implements OpStrategy<Void, Void, Void> {
     @Override
-    public Void beforeAction() {
-        return OpStrategy.super.beforeAction();
+    public Void beforeAction(Void args) {
+        return OpStrategy.super.beforeAction(args);
     }
 
-    /**
-     * Default implementation that does nothing.
-     * Override this method to record operations without comparison.
-     * 
-     * @param target the target entity type from the annotation
-     * @param action the action type from the annotation
-     * @param newData the data extracted from method arguments
-     */
     @Override
-    public void afterAction(Class<? extends Enum> target, Class<?
-            extends Enum> action, Object newData) {
-        OpStrategy.super.afterAction(target, action, newData);
+    public Void beforeAction(String clazz, String method, Void args) {
+        return OpStrategy.super.beforeAction(clazz, method, args);
     }
 
-    /**
-     * Default implementation that does nothing.
-     * Override this method to record operations with comparison.
-     * 
-     * @param target the target entity type from the annotation
-     * @param action the action type from the annotation
-     * @param oldData the data captured before method execution
-     * @param newData the data extracted from method arguments
-     */
     @Override
-    public void afterAction(Class<? extends Enum> target, Class<?
-            extends Enum> action, Object oldData, Object newData) {
-        OpStrategy.super.afterAction(target, action, oldData, newData);
+    public void afterAction(Void newData) {
+        OpStrategy.super.afterAction(newData);
+    }
 
+    @Override
+    public void afterAction(Void oldData, Void newData) {
+        OpStrategy.super.afterAction(oldData, newData);
+    }
+
+    @Override
+    public void afterAction(String clazz, String method, Void newData) {
+        OpStrategy.super.afterAction(clazz, method, newData);
+    }
+
+    @Override
+    public void afterAction(String clazz, String method, Void oldData,
+                            Void newData) {
+        OpStrategy.super.afterAction(clazz, method, oldData, newData);
+    }
+
+    @Override
+    public void afterReturn(Void returnData) {
+        OpStrategy.super.afterReturn(returnData);
+    }
+
+    @Override
+    public void afterReturn(String clazz, String method, Void returnData) {
+        OpStrategy.super.afterReturn(clazz, method, returnData);
     }
 }

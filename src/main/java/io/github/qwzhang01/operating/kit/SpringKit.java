@@ -4,6 +4,36 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ * Spring Utility Toolkit.
+ * <p>
+ * This utility class provides convenient static methods to access Spring's
+ * application context and retrieve beans. It implements
+ * {@link ApplicationContextAware} to automatically receive the application
+ * context from Spring during initialization.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Static access to Spring application context</li>
+ *   <li>Multiple methods for retrieving beans by name, type, or both</li>
+ *   <li>Safe bean retrieval methods that don't throw exceptions</li>
+ *   <li>Bean existence and type checking utilities</li>
+ * </ul>
+ *
+ * <p>Usage example:
+ * <pre>
+ * // Get bean by type
+ * UserService userService = SpringKit.getBean(UserService.class);
+ *
+ * // Get bean safely (returns null if not found)
+ * UserService service = SpringKit.getBeanSafely(UserService.class);
+ *
+ * // Check if bean exists
+ * boolean exists = SpringKit.containsBean("userService");
+ * </pre>
+ *
+ * @author avinzhang
+ */
 public final class SpringKit implements ApplicationContextAware {
 
     /**

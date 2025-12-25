@@ -2,38 +2,53 @@ package io.github.qwzhang01.operating.processor;
 
 import io.github.qwzhang01.operating.anno.Op;
 import io.github.qwzhang01.operating.kit.SpringKit;
+import io.github.qwzhang01.operating.strategy.OpAddStrategy;
 import io.github.qwzhang01.operating.strategy.OpStrategy;
 
 /**
  * After Processor for Operation Recording.
- * 
+ * <p>
  * This processor is invoked after the target method execution completes.
  * It retrieves the configured strategy and delegates the operation recording
- * to the strategy's afterAction method.
- * 
+ * to the strategy's afterAction and afterReturn methods.
+ *
  * <p>The processor handles two scenarios:
  * <ul>
- *   <li>If oldData is null (no comparison needed), only newData is recorded</li>
- *   <li>If oldData exists (comparison enabled), both old and new data are recorded</li>
+ *   <li>If oldData is null (no comparison needed), only newData is
+ *   recorded</li>
+ *   <li>If oldData exists (comparison enabled), both old and new data are
+ *   recorded</li>
  * </ul>
+ *
+ * <p>Additionally, if the method returns a value, it will be passed to the
+ * strategy's afterReturn methods for further processing.
+ *
+ * @author avinzhang
  */
 public class AfterProcessor {
-    
+
     /**
      * Processes the operation recording after method execution.
-     * 
+     *
      * <p>This method:
      * <ol>
      *   <li>Retrieves the strategy class from the annotation</li>
      *   <li>Gets the strategy bean instance from Spring context</li>
-     *   <li>Invokes the appropriate afterAction method based on whether oldData exists</li>
+     *   <li>Invokes the appropriate afterAction method based on whether
+     *   oldData exists</li>
+     *   <li>Invokes afterReturn methods to process the return value</li>
      * </ol>
-     * 
-     * @param op the operation annotation containing configuration
-     * @param oldData the data captured before method execution (null if comparison is disabled)
-     * @param newData the data extracted from method arguments
+     *
+     * @param clazz  the fully qualified name of the class containing the method
+     * @param method the name of the method being executed
+     * @param op     the operation annotation containing configuration
+     * @param dbData the data captured before method execution (null if
+     *               comparison is disabled)
+     * @param arg    the data extracted from method arguments
+     * @param result the return value from the method execution
      */
-    public void process(Op op, Object oldData, Object newData) {
+    public void process(String clazz, String method, Op op, Object dbData,
+                        Object arg, Object result) {
         Class<? extends OpStrategy> strategyClazz = op.strategy();
 
         OpStrategy strategy = SpringKit.getBeanSafely(strategyClazz);
@@ -41,13 +56,28 @@ public class AfterProcessor {
             return;
         }
 
-        // If no oldData (comparison disabled), record only new data
-        if (oldData == null) {
-            strategy.afterAction(op.target(), op.action(), newData);
-            return;
+        if (dbData == null) {
+            if (arg != null && !OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+                strategy.afterAction(arg);
+                strategy.afterAction(clazz, method, arg);
+            }
+
+            if (result != null && OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+                strategy.afterReturn(result);
+                strategy.afterReturn(clazz, method, result);
+            }
+        } else {
+
+            if (arg != null && !OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+                strategy.afterAction(dbData, arg);
+                strategy.afterAction(clazz, method, dbData, arg);
+            }
+
+            if (result != null && OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+                strategy.afterReturn(result);
+                strategy.afterReturn(clazz, method, result);
+            }
         }
-        
-        // If oldData exists (comparison enabled), record both old and new data
-        strategy.afterAction(op.target(), op.action(), oldData, newData);
+
     }
 }

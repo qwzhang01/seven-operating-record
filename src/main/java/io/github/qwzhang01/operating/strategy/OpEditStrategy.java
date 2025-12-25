@@ -1,5 +1,7 @@
 package io.github.qwzhang01.operating.strategy;
 
+import io.github.qwzhang01.operating.exception.NonsupportedOpException;
+
 /**
  * Operation Recording Strategy Interface.
  * <p>
@@ -46,10 +48,9 @@ package io.github.qwzhang01.operating.strategy;
  *
  * @param <N> the type of new data from method arguments
  * @param <O> the type of old data captured before method execution
- * @param <R> the type of return data from method execution
  * @author avinzhang
  */
-public interface OpStrategy<N, O, R> {
+public interface OpEditStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
 
     /**
      * Captures the current state before method execution.
@@ -60,6 +61,7 @@ public interface OpStrategy<N, O, R> {
      * @param args the arguments extracted from the method parameters
      * @return the current state to be compared later, or null if not needed
      */
+    @Override
     default O beforeAction(N args) {
         return null;
     }
@@ -76,6 +78,7 @@ public interface OpStrategy<N, O, R> {
      * @param args   the arguments extracted from the method parameters
      * @return the current state to be compared later, or null if not needed
      */
+    @Override
     default O beforeAction(String clazz, String method, N args) {
         return null;
     }
@@ -88,6 +91,7 @@ public interface OpStrategy<N, O, R> {
      *
      * @param args the new data extracted from method arguments
      */
+    @Override
     default void afterAction(N args) {
     }
 
@@ -98,6 +102,7 @@ public interface OpStrategy<N, O, R> {
      * @param method the name of the method being executed
      * @param args   the new data extracted from method arguments
      */
+    @Override
     default void afterAction(String clazz, String method, N args) {
     }
 
@@ -110,6 +115,7 @@ public interface OpStrategy<N, O, R> {
      * @param dbData the old data captured before method execution
      * @param args   the new data extracted from method arguments
      */
+    @Override
     default void afterAction(O dbData, N args) {
     }
 
@@ -126,8 +132,8 @@ public interface OpStrategy<N, O, R> {
      * @param dbData the old data captured before method execution
      * @param args   the new data extracted from method arguments
      */
-    default void afterAction(String clazz, String method,
-                             O dbData, N args) {
+    @Override
+    default void afterAction(String clazz, String method, O dbData, N args) {
     }
 
     /**
@@ -139,8 +145,9 @@ public interface OpStrategy<N, O, R> {
      *
      * @param returnData the value returned by the method
      */
-    default void afterReturn(R returnData) {
-
+    @Override
+    default void afterReturn(Void returnData) {
+        throw new NonsupportedOpException();
     }
 
     /**
@@ -151,7 +158,8 @@ public interface OpStrategy<N, O, R> {
      * @param method     the name of the method being executed
      * @param returnData the value returned by the method
      */
-    default void afterReturn(String clazz, String method, R returnData) {
-
+    @Override
+    default void afterReturn(String clazz, String method, Void returnData) {
+        throw new NonsupportedOpException();
     }
 }
