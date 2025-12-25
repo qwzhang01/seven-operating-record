@@ -18,5 +18,7 @@ public @interface Op {
 
     Class<? extends OpStrategy> strategy() default DefaultOpStrategy.class;
 
+    Class<?> args() default Object.class;
+
     boolean comparable() default false;
 }

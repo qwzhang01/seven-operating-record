@@ -1,6 +1,9 @@
 package io.github.qwzhang01.operating.config;
 
+import io.github.qwzhang01.operating.aspecrt.OpAspect;
 import io.github.qwzhang01.operating.kit.SpringKit;
+import io.github.qwzhang01.operating.processor.AfterProcessor;
+import io.github.qwzhang01.operating.processor.BeforeProcessor;
 import io.github.qwzhang01.operating.strategy.DefaultOpStrategy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -19,5 +22,11 @@ public class OperationRecordConfig {
     @ConditionalOnMissingBean(DefaultOpStrategy.class)
     public DefaultOpStrategy defaultOpStrategy() {
         return new DefaultOpStrategy();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(OpAspect.class)
+    public OpAspect opAspect() {
+        return new OpAspect(new BeforeProcessor(), new AfterProcessor());
     }
 }
