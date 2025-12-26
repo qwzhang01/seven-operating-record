@@ -46,10 +46,11 @@ import io.github.qwzhang01.operating.exception.NonsupportedOpException;
  * }
  * </pre>
  *
- * @param <R> the type of return data from method execution
+ * @param <N> the type of new data from method arguments
+ * @param <O> the type of old data captured before method execution
  * @author avinzhang
  */
-public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
+public interface OpNeedQueryStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
 
     /**
      * Captures the current state before method execution.
@@ -61,8 +62,8 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @return the current state to be compared later, or null if not needed
      */
     @Override
-    default Void beforeAction(Void args) {
-        throw new NonsupportedOpException();
+    default O beforeAction(N args) {
+        return null;
     }
 
     /**
@@ -78,8 +79,8 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @return the current state to be compared later, or null if not needed
      */
     @Override
-    default Void beforeAction(String clazz, String method, Void args) {
-        throw new NonsupportedOpException();
+    default O beforeAction(String clazz, String method, N args) {
+        return null;
     }
 
     /**
@@ -91,8 +92,7 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @param args the new data extracted from method arguments
      */
     @Override
-    default void afterAction(Void args) {
-        throw new NonsupportedOpException();
+    default void afterAction(N args) {
     }
 
     /**
@@ -103,8 +103,7 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @param args   the new data extracted from method arguments
      */
     @Override
-    default void afterAction(String clazz, String method, Void args) {
-        throw new NonsupportedOpException();
+    default void afterAction(String clazz, String method, N args) {
     }
 
     /**
@@ -117,8 +116,7 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @param args   the new data extracted from method arguments
      */
     @Override
-    default void afterAction(Void dbData, Void args) {
-        throw new NonsupportedOpException();
+    default void afterAction(O dbData, N args) {
     }
 
     /**
@@ -136,8 +134,7 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      */
     @Override
     default void afterAction(String clazz, String method,
-                             Void dbData, Void args) {
-        throw new NonsupportedOpException();
+                             O dbData, N args) {
     }
 
     /**
@@ -150,8 +147,8 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @param returnData the value returned by the method
      */
     @Override
-    default void afterReturn(R returnData) {
-
+    default void afterReturn(Void returnData) {
+        throw new NonsupportedOpException();
     }
 
     /**
@@ -163,7 +160,7 @@ public interface OpAddStrategy<Void, R> extends OpStrategy<Void, Void, R> {
      * @param returnData the value returned by the method
      */
     @Override
-    default void afterReturn(String clazz, String method, R returnData) {
-
+    default void afterReturn(String clazz, String method, Void returnData) {
+        throw new NonsupportedOpException();
     }
 }

@@ -46,11 +46,11 @@ import io.github.qwzhang01.operating.exception.NonsupportedOpException;
  * }
  * </pre>
  *
- * @param <N> the type of new data from method arguments
- * @param <O> the type of old data captured before method execution
+ * @param <P> the type of old data captured before method execution
  * @author avinzhang
  */
-public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
+public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
+        P, Void> {
 
     /**
      * Captures the current state before method execution.
@@ -62,8 +62,8 @@ public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
      * @return the current state to be compared later, or null if not needed
      */
     @Override
-    default O beforeAction(N args) {
-        return null;
+    default P beforeAction(P args) {
+        return args;
     }
 
     /**
@@ -79,8 +79,8 @@ public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
      * @return the current state to be compared later, or null if not needed
      */
     @Override
-    default O beforeAction(String clazz, String method, N args) {
-        return null;
+    default P beforeAction(String clazz, String method, P args) {
+        return args;
     }
 
     /**
@@ -92,7 +92,7 @@ public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
      * @param args the new data extracted from method arguments
      */
     @Override
-    default void afterAction(N args) {
+    default void afterAction(P args) {
     }
 
     /**
@@ -103,7 +103,7 @@ public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
      * @param args   the new data extracted from method arguments
      */
     @Override
-    default void afterAction(String clazz, String method, N args) {
+    default void afterAction(String clazz, String method, P args) {
     }
 
     /**
@@ -116,7 +116,8 @@ public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
      * @param args   the new data extracted from method arguments
      */
     @Override
-    default void afterAction(O dbData, N args) {
+    default void afterAction(P dbData, P args) {
+        throw new NonsupportedOpException();
     }
 
     /**
@@ -134,7 +135,8 @@ public interface OpDelStrategy<N, O, Void> extends OpStrategy<N, O, Void> {
      */
     @Override
     default void afterAction(String clazz, String method,
-                             O dbData, N args) {
+                             P dbData, P args) {
+        throw new NonsupportedOpException();
     }
 
     /**

@@ -1,30 +1,30 @@
 # Seven Operating Record
 
-[中文文档](README_CN.md)
+[English Documentation](README.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.qwzhang01/seven-operating-record.svg)](https://search.maven.org/artifact/io.github.qwzhang01/seven-operating-record)
 
-## Overview
+## 概述
 
-Seven Operating Record is a lightweight, AOP-based operation recording library for Spring Boot applications. It provides a flexible and customizable way to track business operations, capture data changes, and maintain audit logs without invasive code modifications.
+Seven Operating Record 是一个轻量级的、基于 AOP 的 Spring Boot 操作记录库。它提供了一种灵活且可自定义的方式来跟踪业务操作、捕获数据变更并维护审计日志，无需侵入式的代码修改。
 
-## Features
+## 特性
 
-- 🎯 **AOP-Based**: Non-invasive operation recording using Spring AOP
-- 🔄 **Data Comparison**: Track data changes before and after method execution
-- 🎨 **Customizable Strategies**: Flexible strategy pattern for different recording scenarios
-- 📝 **Multiple Strategy Types**: Built-in support for parameter-based, query-based, and return-based recording
-- 🚀 **Easy Integration**: Spring Boot auto-configuration with minimal setup
-- 🔧 **Type-Safe**: Fully generic support for type safety
-- ⚡ **Lightweight**: Minimal dependencies and overhead
+- 🎯 **基于 AOP**：使用 Spring AOP 实现非侵入式操作记录
+- 🔄 **数据对比**：跟踪方法执行前后的数据变化
+- 🎨 **可自定义策略**：灵活的策略模式适配不同的记录场景
+- 📝 **多种策略类型**：内置支持基于参数、查询和返回值的记录方式
+- 🚀 **易于集成**：Spring Boot 自动配置，最小化配置
+- 🔧 **类型安全**：完整的泛型支持确保类型安全
+- ⚡ **轻量级**：最少依赖和开销
 
-## Requirements
+## 环境要求
 
 - Java 17+
 - Spring Boot 3.1.5+
 
-## Installation
+## 安装
 
 ### Maven
 
@@ -42,11 +42,11 @@ Seven Operating Record is a lightweight, AOP-based operation recording library f
 implementation 'io.github.qwzhang01:seven-operating-record:1.0.1'
 ```
 
-## Quick Start
+## 快速开始
 
-### 1. Basic Usage
+### 1. 基本使用
 
-Simply annotate your service methods with `@Op`:
+只需在服务方法上添加 `@Op` 注解：
 
 ```java
 @Service
@@ -54,15 +54,15 @@ public class UserService {
     
     @Op(strategy = UserOpStrategy.class, args = UserDto.class)
     public void updateUser(UserDto userDto) {
-        // Your business logic
+        // 你的业务逻辑
         userRepository.save(userDto);
     }
 }
 ```
 
-### 2. Create a Strategy
+### 2. 创建策略
 
-Implement your custom recording strategy:
+实现自定义的记录策略：
 
 ```java
 @Component
@@ -76,50 +76,50 @@ public class UserOpStrategy implements OpStrategy<UserDto, User, Void> {
     
     @Override
     public User beforeAction(UserDto args) {
-        // Capture old data before the operation
+        // 在操作前捕获旧数据
         return userRepository.findById(args.getId()).orElse(null);
     }
     
     @Override
     public void afterAction(User oldData, UserDto newData) {
-        // Compare and record changes
+        // 对比并记录变更
         List<String> changes = compareData(oldData, newData);
-        logService.save("User Updated", changes);
+        logService.save("用户更新", changes);
     }
     
     private List<String> compareData(User oldData, UserDto newData) {
         List<String> changes = new ArrayList<>();
         if (!Objects.equals(oldData.getName(), newData.getName())) {
-            changes.add("Name: " + oldData.getName() + " -> " + newData.getName());
+            changes.add("姓名: " + oldData.getName() + " -> " + newData.getName());
         }
-        // Compare other fields...
+        // 对比其他字段...
         return changes;
     }
 }
 ```
 
-## Strategy Types
+## 策略类型
 
-Seven Operating Record provides three built-in strategy interfaces:
+Seven Operating Record 提供了三种内置策略接口：
 
 ### 1. OpStrategy<N, O, R>
 
-The base strategy interface for custom operation recording.
+用于自定义操作记录的基础策略接口。
 
-**Use case**: Full control over before/after operation handling
+**使用场景**：需要完全控制操作前后处理逻辑
 
 ```java
 @Component
 public class CustomStrategy implements OpStrategy<InputDto, Entity, Boolean> {
     @Override
     public Entity beforeAction(InputDto args) {
-        // Capture state before operation
+        // 在操作前捕获状态
         return repository.findById(args.getId()).orElse(null);
     }
     
     @Override
     public void afterAction(Entity oldData, InputDto newData) {
-        // Record the operation
+        // 记录操作
         logService.recordChange(oldData, newData);
     }
 }
@@ -127,22 +127,22 @@ public class CustomStrategy implements OpStrategy<InputDto, Entity, Boolean> {
 
 ### 2. OpNeedQueryStrategy<N, O, Void>
 
-Strategy for operations that need to query data before execution.
+用于需要在执行前查询数据的操作策略。
 
-**Use case**: When you need to fetch existing data for comparison
+**使用场景**：需要获取现有数据进行对比
 
 ```java
 @Component
 public class QueryStrategy implements OpNeedQueryStrategy<UserDto, User, Void> {
     @Override
     public User beforeAction(UserDto args) {
-        // Query existing data
+        // 查询现有数据
         return userRepository.findById(args.getId()).orElse(null);
     }
     
     @Override
     public void afterAction(User dbData, UserDto args) {
-        // Compare database data with new data
+        // 将数据库数据与新数据对比
         if (dbData != null) {
             List<String> changes = findDifferences(dbData, args);
             auditService.log(changes);
@@ -153,16 +153,16 @@ public class QueryStrategy implements OpNeedQueryStrategy<UserDto, User, Void> {
 
 ### 3. OpParamStrategy<P, Void>
 
-Strategy that uses the method parameter itself for recording.
+使用方法参数本身进行记录的策略。
 
-**Use case**: When the parameter itself contains all necessary information
+**使用场景**：参数本身包含所有必要信息
 
 ```java
 @Component
 public class ParamStrategy implements OpParamStrategy<LogDto, Void> {
     @Override
     public void afterAction(LogDto args) {
-        // Record using parameter data directly
+        // 直接使用参数数据记录
         operationLogService.save(args);
     }
 }
@@ -170,16 +170,16 @@ public class ParamStrategy implements OpParamStrategy<LogDto, Void> {
 
 ### 4. OpReturnStrategy<Void, R>
 
-Strategy that uses the method's return value for recording.
+使用方法返回值进行记录的策略。
 
-**Use case**: When you need to record based on the operation result
+**使用场景**：需要根据操作结果进行记录
 
 ```java
 @Component
 public class ReturnStrategy implements OpReturnStrategy<Void, OperationResult> {
     @Override
     public void afterReturn(OperationResult returnData) {
-        // Record based on return value
+        // 根据返回值记录
         if (returnData.isSuccess()) {
             logService.recordSuccess(returnData);
         } else {
@@ -189,22 +189,22 @@ public class ReturnStrategy implements OpReturnStrategy<Void, OperationResult> {
 }
 ```
 
-## Annotation Attributes
+## 注解属性
 
-### @Op Annotation
+### @Op 注解
 
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `strategy` | `Class<? extends OpStrategy>` | `DefaultOpStrategy.class` | The strategy class for handling operation recording |
-| `args` | `Class<?>` | `Object.class` | The type of argument to extract from method parameters |
-| `comparable` | `boolean` | `false` | Whether to compare old and new data |
-| `removed` | `boolean` | `false` | Whether this is a removal/deletion operation |
+| 属性 | 类型 | 默认值 | 描述 |
+|-----|------|-------|------|
+| `strategy` | `Class<? extends OpStrategy>` | `DefaultOpStrategy.class` | 处理操作记录的策略类 |
+| `args` | `Class<?>` | `Object.class` | 从方法参数中提取的参数类型 |
+| `comparable` | `boolean` | `false` | 是否对比新旧数据 |
+| `removed` | `boolean` | `false` | 是否为删除操作 |
 
-## Advanced Usage
+## 高级用法
 
-### Data Comparison
+### 数据对比
 
-Enable comparison to track changes:
+启用对比功能跟踪数据变化：
 
 ```java
 @Op(strategy = CompareStrategy.class, args = UserDto.class, comparable = true)
@@ -213,9 +213,9 @@ public void updateUser(UserDto userDto) {
 }
 ```
 
-### Deletion Tracking
+### 删除跟踪
 
-Mark deletion operations to capture data before removal:
+标记删除操作以在删除前捕获数据：
 
 ```java
 @Op(strategy = DeleteStrategy.class, args = Long.class, removed = true)
@@ -224,25 +224,25 @@ public void deleteUser(Long userId) {
 }
 ```
 
-### Context-Aware Recording
+### 上下文感知记录
 
-Access class and method information in your strategy:
+在策略中访问类和方法信息：
 
 ```java
 @Component
 public class ContextStrategy implements OpStrategy<UserDto, User, Void> {
     @Override
     public void afterAction(String clazz, String method, User oldData, UserDto newData) {
-        // clazz: fully qualified class name
-        // method: method name
+        // clazz: 完全限定类名
+        // method: 方法名
         logService.record(clazz + "." + method, oldData, newData);
     }
 }
 ```
 
-### Return Value Processing
+### 返回值处理
 
-Record operations based on return values:
+基于返回值记录操作：
 
 ```java
 @Op(strategy = ResultStrategy.class)
@@ -261,9 +261,9 @@ public class ResultStrategy implements OpReturnStrategy<Void, Result> {
 }
 ```
 
-## Configuration
+## 配置
 
-The library uses Spring Boot auto-configuration. You can override default beans:
+该库使用 Spring Boot 自动配置。你可以覆盖默认的 Bean：
 
 ```java
 @Configuration
@@ -276,77 +276,76 @@ public class OperatingRecordConfiguration {
 }
 ```
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     @Op Annotation                       │
-│  Marks methods requiring operation recording             │
+│                     @Op 注解                             │
+│  标记需要记录操作的方法                                   │
 └────────────────┬────────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────┐
 │                      OpAspect                            │
-│  AOP interceptor for @Op annotated methods              │
+│  拦截带有 @Op 注解的方法                                  │
 └────┬────────────────────────────────────────────────┬───┘
      │                                                 │
      ▼                                                 ▼
 ┌────────────────┐                            ┌──────────────┐
 │BeforeProcessor │                            │AfterProcessor│
-│Captures old    │                            │Records the   │
-│data state      │                            │operation     │
+│捕获旧数据状态  │                            │记录操作      │
 └────────────────┘                            └──────────────┘
      │                                                 │
      └──────────────────┬──────────────────────────────┘
                         ▼
             ┌───────────────────────┐
             │   OpStrategy          │
-            │   (User Implementation)│
+            │   (用户实现)          │
             └───────────────────────┘
 ```
 
-## Best Practices
+## 最佳实践
 
-1. **Strategy as Spring Beans**: Always register your strategies as Spring beans (`@Component`, `@Service`, etc.)
-2. **Type Safety**: Use specific generic types in your strategies for type safety
-3. **Lightweight Before Actions**: Keep `beforeAction` methods efficient to minimize performance impact
-4. **Async Logging**: Consider async processing for heavy logging operations
-5. **Exception Handling**: Handle exceptions in strategies to prevent disrupting business logic
+1. **策略作为 Spring Bean**：始终将策略注册为 Spring Bean（`@Component`、`@Service` 等）
+2. **类型安全**：在策略中使用具体的泛型类型以确保类型安全
+3. **轻量级的前置操作**：保持 `beforeAction` 方法高效以最小化性能影响
+4. **异步日志记录**：考虑对重量级的日志操作使用异步处理
+5. **异常处理**：在策略中处理异常以防止中断业务逻辑
 
-## Examples
+## 示例
 
-Check out the [examples directory](./examples) for complete working examples:
+查看 [示例目录](./examples) 获取完整的工作示例：
 
-- User Management with Audit Logging
-- Order Processing with Change Tracking
-- Data Deletion with Recovery Information
+- 带审计日志的用户管理
+- 带变更跟踪的订单处理
+- 带恢复信息的数据删除
 
-## Contributing
+## 贡献
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+欢迎贡献！请随时提交 Pull Request。
 
-## License
+## 许可证
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+本项目采用 Apache License 2.0 许可证 - 详见 [LICENSE](LICENSE) 文件。
 
-## Author
+## 作者
 
 **avinzhang**
-- Email: avinzhang@tencent.com
+- 邮箱：avinzhang@tencent.com
 - GitHub: [@qwzhang01](https://github.com/qwzhang01)
 
-## Support
+## 支持
 
-If you have any questions or run into issues, please:
+如果你有任何问题或遇到问题，请：
 
-1. Check the [documentation](./docs)
-2. Search [existing issues](https://github.com/qwzhang01/seven-operating-record/issues)
-3. Create a [new issue](https://github.com/qwzhang01/seven-operating-record/issues/new)
+1. 查看[文档](./docs)
+2. 搜索[现有问题](https://github.com/qwzhang01/seven-operating-record/issues)
+3. 创建[新问题](https://github.com/qwzhang01/seven-operating-record/issues/new)
 
-## Changelog
+## 更新日志
 
-### Version 1.0.1
-- Initial release
-- Basic operation recording functionality
-- Support for customizable strategies
-- Spring Boot auto-configuration
+### 版本 1.0.1
+- 初始版本发布
+- 基础操作记录功能
+- 支持可自定义策略
+- Spring Boot 自动配置

@@ -4,8 +4,7 @@ import io.github.qwzhang01.operating.anno.Op;
 import io.github.qwzhang01.operating.processor.AfterProcessor;
 import io.github.qwzhang01.operating.processor.ArgsProcessor;
 import io.github.qwzhang01.operating.processor.BeforeProcessor;
-import io.github.qwzhang01.operating.strategy.OpDelStrategy;
-import io.github.qwzhang01.operating.strategy.OpEditStrategy;
+import io.github.qwzhang01.operating.strategy.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -90,8 +89,8 @@ public class OpAspect {
         // Capture old data if comparison is enabled
         Object dbData = null;
         if (op.comparable() || op.removed()
-                || OpDelStrategy.class.isAssignableFrom(op.strategy())
-                || OpEditStrategy.class.isAssignableFrom(op.strategy())) {
+                || OpNeedQueryStrategy.class.isAssignableFrom(op.strategy())
+                || OpParamStrategy.class.isAssignableFrom(op.strategy())) {
             dbData = beforeProcessor.process(targetClazz, method.getName(),
                     op, arg);
         }

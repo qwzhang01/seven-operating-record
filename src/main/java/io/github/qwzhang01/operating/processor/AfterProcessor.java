@@ -2,7 +2,7 @@ package io.github.qwzhang01.operating.processor;
 
 import io.github.qwzhang01.operating.anno.Op;
 import io.github.qwzhang01.operating.kit.SpringKit;
-import io.github.qwzhang01.operating.strategy.OpAddStrategy;
+import io.github.qwzhang01.operating.strategy.OpReturnStrategy;
 import io.github.qwzhang01.operating.strategy.OpStrategy;
 
 /**
@@ -57,23 +57,23 @@ public class AfterProcessor {
         }
 
         if (dbData == null) {
-            if (arg != null && !OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+            if (arg != null && !OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
                 strategy.afterAction(arg);
                 strategy.afterAction(clazz, method, arg);
             }
 
-            if (result != null && OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+            if (result != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
                 strategy.afterReturn(result);
                 strategy.afterReturn(clazz, method, result);
             }
         } else {
 
-            if (arg != null && !OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+            if (arg != null && !OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
                 strategy.afterAction(dbData, arg);
                 strategy.afterAction(clazz, method, dbData, arg);
             }
 
-            if (result != null && OpAddStrategy.class.isAssignableFrom(strategyClazz)) {
+            if (result != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
                 strategy.afterReturn(result);
                 strategy.afterReturn(clazz, method, result);
             }

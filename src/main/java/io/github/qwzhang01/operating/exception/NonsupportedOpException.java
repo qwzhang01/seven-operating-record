@@ -1,13 +1,16 @@
 package io.github.qwzhang01.operating.exception;
 
 /**
- * 不支持的操作异常
+ * Unsupported Operation Exception.
+ * <p>
+ * This runtime exception is thrown when an operation is attempted
+ * that is not supported by the current strategy implementation.
  *
  * @author avinzhang
  */
 public class NonsupportedOpException extends RuntimeException {
     public NonsupportedOpException() {
-        super("不支持的操作");
+        super("Unsupported operation");
     }
 
     public NonsupportedOpException(String message) {
