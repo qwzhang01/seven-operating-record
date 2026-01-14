@@ -58,12 +58,12 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      * This method is called when {@code comparable} is enabled in the
      * {@link io.github.qwzhang01.operating.anno.Op} annotation.
      *
-     * @param args the arguments extracted from the method parameters
+     * @param methodArgs the arguments extracted from the method parameters
      * @return the current state to be compared later, or null if not needed
      */
     @Override
-    default P beforeAction(P args) {
-        return args;
+    default P beforeAction(P methodArgs) {
+        return methodArgs;
     }
 
     /**
@@ -73,14 +73,15 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      * This overloaded version provides additional context about which class
      * and method is being executed, useful for context-aware recording.
      *
-     * @param clazz  the fully qualified name of the class containing the method
-     * @param method the name of the method being executed
-     * @param args   the arguments extracted from the method parameters
+     * @param clazz      the fully qualified name of the class containing the
+     *                  method
+     * @param method     the name of the method being executed
+     * @param methodArgs the arguments extracted from the method parameters
      * @return the current state to be compared later, or null if not needed
      */
     @Override
-    default P beforeAction(String clazz, String method, P args) {
-        return args;
+    default P beforeAction(String clazz, String method, P methodArgs) {
+        return methodArgs;
     }
 
     /**
@@ -89,21 +90,22 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      * This method is called when no comparison is needed (when
      * {@code comparable} is false or no old data was captured).
      *
-     * @param args the new data extracted from method arguments
+     * @param methodArgs the new data extracted from method arguments
      */
     @Override
-    default void afterAction(P args) {
+    default void afterAction(P methodArgs) {
     }
 
     /**
      * Records operation after method execution with context information.
      *
-     * @param clazz  the fully qualified name of the class containing the method
-     * @param method the name of the method being executed
-     * @param args   the new data extracted from method arguments
+     * @param clazz      the fully qualified name of the class containing the
+     *                  method
+     * @param method     the name of the method being executed
+     * @param methodArgs the new data extracted from method arguments
      */
     @Override
-    default void afterAction(String clazz, String method, P args) {
+    default void afterAction(String clazz, String method, P methodArgs) {
     }
 
     /**
@@ -112,12 +114,11 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      * This method is called when comparison is enabled, allowing the strategy
      * to analyze differences between the old and new state.
      *
-     * @param dbData the old data captured before method execution
-     * @param args   the new data extracted from method arguments
+     * @param beforeDbData the old data captured before method execution
+     * @param methodArgs   the new data extracted from method arguments
      */
     @Override
-    default void afterAction(P dbData, P args) {
-        throw new NonsupportedOpException();
+    default void afterAction(P beforeDbData, P methodArgs) {
     }
 
     /**
@@ -128,15 +129,15 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      * information
      * including class/method context and both old and new data states.
      *
-     * @param clazz  the fully qualified name of the class containing the method
-     * @param method the name of the method being executed
-     * @param dbData the old data captured before method execution
-     * @param args   the new data extracted from method arguments
+     * @param clazz        the fully qualified name of the class containing
+     *                     the method
+     * @param method       the name of the method being executed
+     * @param beforeDbData the old data captured before method execution
+     * @param methodArgs   the new data extracted from method arguments
      */
     @Override
     default void afterAction(String clazz, String method,
-                             P dbData, P args) {
-        throw new NonsupportedOpException();
+                             P beforeDbData, P methodArgs) {
     }
 
     /**
@@ -146,23 +147,23 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      * strategy
      * to record or react to the execution result.
      *
-     * @param returnData the value returned by the method
+     * @param methodReturn the value returned by the method
      */
     @Override
-    default void afterReturn(Void returnData) {
+    default void afterReturn(Void methodReturn) {
         throw new NonsupportedOpException();
     }
 
     /**
      * Processes the return value with class and method context.
      *
-     * @param clazz      the fully qualified name of the class containing the
-     *                   method
-     * @param method     the name of the method being executed
-     * @param returnData the value returned by the method
+     * @param clazz        the fully qualified name of the class containing the
+     *                     method
+     * @param method       the name of the method being executed
+     * @param methodReturn the value returned by the method
      */
     @Override
-    default void afterReturn(String clazz, String method, Void returnData) {
+    default void afterReturn(String clazz, String method, Void methodReturn) {
         throw new NonsupportedOpException();
     }
 }

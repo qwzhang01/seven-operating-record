@@ -2,6 +2,8 @@ package io.github.qwzhang01.operating.processor;
 
 import io.github.qwzhang01.operating.anno.Op;
 import io.github.qwzhang01.operating.kit.SpringKit;
+import io.github.qwzhang01.operating.strategy.OpNeedQueryStrategy;
+import io.github.qwzhang01.operating.strategy.OpParamStrategy;
 import io.github.qwzhang01.operating.strategy.OpReturnStrategy;
 import io.github.qwzhang01.operating.strategy.OpStrategy;
 
@@ -39,16 +41,27 @@ public class AfterProcessor {
      *   <li>Invokes afterReturn methods to process the return value</li>
      * </ol>
      *
-     * @param clazz  the fully qualified name of the class containing the method
-     * @param method the name of the method being executed
-     * @param op     the operation annotation containing configuration
-     * @param dbData the data captured before method execution (null if
-     *               comparison is disabled)
-     * @param arg    the data extracted from method arguments
-     * @param result the return value from the method execution
+     * @param clazz        the fully qualified name of the class containing
+     *                     the method
+     * @param method       the name of the method being executed
+     * @param op           the operation annotation containing configuration
+     * @param beforeDbData the data captured before method execution (null if
+     *                     comparison is disabled)
+     * @param methodArgs   the data extracted from method arguments
+     * @param methodReturn the return value from the method execution
      */
-    public void process(String clazz, String method, Op op, Object dbData,
-                        Object arg, Object result) {
+    public void process(String clazz, String method,
+                        Op op,
+                        Object beforeDbData,
+                        Object methodArgs,
+                        Object methodReturn) {
+        if (op == null) {
+            return;
+        }
+        if (op.strategy() == null) {
+            return;
+        }
+
         Class<? extends OpStrategy> strategyClazz = op.strategy();
 
         OpStrategy strategy = SpringKit.getBeanSafely(strategyClazz);
@@ -56,26 +69,30 @@ public class AfterProcessor {
             return;
         }
 
-        if (dbData == null) {
-            if (arg != null && !OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
-                strategy.afterAction(arg);
-                strategy.afterAction(clazz, method, arg);
+        if (beforeDbData == null) {
+            if (methodArgs != null
+                    && (OpNeedQueryStrategy.class.isAssignableFrom(strategyClazz)
+                    || OpParamStrategy.class.isAssignableFrom(strategyClazz))) {
+                strategy.afterAction(methodArgs);
+                strategy.afterAction(clazz, method, methodArgs);
             }
 
-            if (result != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
-                strategy.afterReturn(result);
-                strategy.afterReturn(clazz, method, result);
+            if (methodReturn != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
+                strategy.afterReturn(methodReturn);
+                strategy.afterReturn(clazz, method, methodReturn);
             }
         } else {
 
-            if (arg != null && !OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
-                strategy.afterAction(dbData, arg);
-                strategy.afterAction(clazz, method, dbData, arg);
+            if (methodArgs != null
+                    && (OpNeedQueryStrategy.class.isAssignableFrom(strategyClazz)
+                    || OpParamStrategy.class.isAssignableFrom(strategyClazz))) {
+                strategy.afterAction(beforeDbData, methodArgs);
+                strategy.afterAction(clazz, method, beforeDbData, methodArgs);
             }
 
-            if (result != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
-                strategy.afterReturn(result);
-                strategy.afterReturn(clazz, method, result);
+            if (methodReturn != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
+                strategy.afterReturn(methodReturn);
+                strategy.afterReturn(clazz, method, methodReturn);
             }
         }
 
