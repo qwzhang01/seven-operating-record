@@ -50,8 +50,8 @@ import io.github.qwzhang01.operating.exception.NonsupportedOpException;
  * @param <O> the type of old data captured before method execution
  * @author avinzhang
  */
-public interface OpNeedQueryStrategy<N, O, Void> extends OpStrategy<N, O,
-        Void> {
+public interface OpNeedQueryStrategy<N, O, Void>
+        extends OpStrategy<N, O, Void> {
 
     /**
      * Captures the current state before method execution.
@@ -94,6 +94,7 @@ public interface OpNeedQueryStrategy<N, O, Void> extends OpStrategy<N, O,
      */
     @Override
     default void afterAction(N args) {
+        throw new NonsupportedOpException();
     }
 
     /**
@@ -105,6 +106,7 @@ public interface OpNeedQueryStrategy<N, O, Void> extends OpStrategy<N, O,
      */
     @Override
     default void afterAction(String clazz, String method, N args) {
+        throw new NonsupportedOpException();
     }
 
     /**

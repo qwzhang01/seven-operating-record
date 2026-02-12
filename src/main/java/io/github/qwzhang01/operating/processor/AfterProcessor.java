@@ -5,7 +5,6 @@ import io.github.qwzhang01.operating.kit.SpringKit;
 import io.github.qwzhang01.operating.strategy.OpNeedQueryStrategy;
 import io.github.qwzhang01.operating.strategy.OpParamStrategy;
 import io.github.qwzhang01.operating.strategy.OpReturnStrategy;
-import io.github.qwzhang01.operating.strategy.OpStrategy;
 
 /**
  * After Processor for Operation Recording.
@@ -62,39 +61,51 @@ public class AfterProcessor {
             return;
         }
 
-        Class<? extends OpStrategy> strategyClazz = op.strategy();
-
-        OpStrategy strategy = SpringKit.getBeanSafely(strategyClazz);
+        var strategy = SpringKit.getBeanSafely(op.strategy());
         if (strategy == null) {
             return;
         }
 
-        if (beforeDbData == null) {
-            if (methodArgs != null
-                    && (OpNeedQueryStrategy.class.isAssignableFrom(strategyClazz)
-                    || OpParamStrategy.class.isAssignableFrom(strategyClazz))) {
-                strategy.afterAction(methodArgs);
-                strategy.afterAction(clazz, method, methodArgs);
-            }
+        // OpReturnStrategy 处理逻辑
+        if (OpReturnStrategy.class.isAssignableFrom(op.strategy())
+                && methodReturn != null) {
+            strategy.afterReturn(methodReturn);
+            strategy.afterReturn(clazz, method, methodReturn);
+            return;
+        }
 
-            if (methodReturn != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
-                strategy.afterReturn(methodReturn);
-                strategy.afterReturn(clazz, method, methodReturn);
-            }
-        } else {
-
-            if (methodArgs != null
-                    && (OpNeedQueryStrategy.class.isAssignableFrom(strategyClazz)
-                    || OpParamStrategy.class.isAssignableFrom(strategyClazz))) {
+        // OpNeedQueryStrategy 处理逻辑
+        if (OpNeedQueryStrategy.class.isAssignableFrom(op.strategy())) {
+            if (beforeDbData != null && methodArgs != null) {
                 strategy.afterAction(beforeDbData, methodArgs);
                 strategy.afterAction(clazz, method, beforeDbData, methodArgs);
             }
-
-            if (methodReturn != null && OpReturnStrategy.class.isAssignableFrom(strategyClazz)) {
-                strategy.afterReturn(methodReturn);
-                strategy.afterReturn(clazz, method, methodReturn);
-            }
+            return;
         }
 
+        // OpParamStrategy 处理逻辑
+        if (OpParamStrategy.class.isAssignableFrom(op.strategy())) {
+            if (methodArgs != null) {
+                strategy.afterAction(methodArgs);
+                strategy.afterAction(clazz, method, methodArgs);
+            }
+            return;
+        }
+
+        // 默认处理逻辑
+        if (methodReturn != null) {
+            strategy.afterReturn(methodReturn);
+            strategy.afterReturn(clazz, method, methodReturn);
+        }
+
+        if (beforeDbData != null) {
+            if (methodArgs != null) {
+                strategy.afterAction(beforeDbData, methodArgs);
+                strategy.afterAction(clazz, method, beforeDbData, methodArgs);
+            }
+        } else if (methodArgs != null) {
+            strategy.afterAction(methodArgs);
+            strategy.afterAction(clazz, method, methodArgs);
+        }
     }
 }

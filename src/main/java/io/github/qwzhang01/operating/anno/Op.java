@@ -47,22 +47,4 @@ public @interface Op {
      * @return the class type of the argument to extract
      */
     Class<?> args() default Object.class;
-
-    /**
-     * Indicates whether to compare old and new data.
-     * If set to true, the system will capture data before method execution
-     * and compare it with data after execution to track changes.
-     *
-     * @return true if comparison is needed, false otherwise
-     */
-    boolean comparable() default false;
-
-    /**
-     * Indicates whether this operation involves data removal or deletion.
-     * If set to true, the system will capture the existing data before deletion
-     * for audit and tracking purposes.
-     *
-     * @return true if this is a removal operation, false otherwise
-     */
-    boolean removed() default false;
 }

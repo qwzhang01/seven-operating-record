@@ -119,6 +119,7 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
      */
     @Override
     default void afterAction(P beforeDbData, P methodArgs) {
+        throw new NonsupportedOpException();
     }
 
     /**
@@ -138,6 +139,7 @@ public interface OpParamStrategy<P, Void> extends OpNeedQueryStrategy<P,
     @Override
     default void afterAction(String clazz, String method,
                              P beforeDbData, P methodArgs) {
+        throw new NonsupportedOpException();
     }
 
     /**

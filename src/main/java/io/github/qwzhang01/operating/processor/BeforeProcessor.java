@@ -2,7 +2,7 @@ package io.github.qwzhang01.operating.processor;
 
 import io.github.qwzhang01.operating.anno.Op;
 import io.github.qwzhang01.operating.kit.SpringKit;
-import io.github.qwzhang01.operating.strategy.OpStrategy;
+import io.github.qwzhang01.operating.strategy.OpReturnStrategy;
 
 /**
  * Before Processor for Operation Recording.
@@ -40,14 +40,23 @@ public class BeforeProcessor {
      * is unavailable
      */
     public Object process(String clazz, String method, Op op, Object args) {
-        Class<? extends OpStrategy> strategyClazz = op.strategy();
+        if (op == null) {
+            return null;
+        }
+        if (op.strategy() == null) {
+            return null;
+        }
 
-        OpStrategy strategy = SpringKit.getBeanSafely(strategyClazz);
+        var strategy = SpringKit.getBeanSafely(op.strategy());
         if (strategy == null) {
             return null;
         }
 
-        Object dbData = strategy.beforeAction(clazz, method, args);
+        if (OpReturnStrategy.class.isAssignableFrom(op.strategy())) {
+            return null;
+        }
+
+        var dbData = strategy.beforeAction(clazz, method, args);
         if (dbData != null) {
             return dbData;
         }
