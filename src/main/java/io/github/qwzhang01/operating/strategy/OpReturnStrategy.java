@@ -3,45 +3,34 @@ package io.github.qwzhang01.operating.strategy;
 import io.github.qwzhang01.operating.exception.NonsupportedOpException;
 
 /**
- * Operation Recording Strategy Interface.
+ * Return-based Operation Recording Strategy Interface.
  * <p>
- * This interface defines the contract for custom operation recording
- * strategies.
- * Implementations can customize how operations are captured, compared, and
- * recorded
- * throughout the method execution lifecycle.
+ * This strategy interface specializes in operation recording scenarios that
+ * focus on processing method return values rather than parameter comparisons.
+ * It extends the base {@link OpStrategy} interface with specific behaviors
+ * for return value-centric operations.
  *
- * <p>The strategy provides hooks at three key points:
- * <ol>
- *   <li><b>Before execution</b> - Capture the current state of data</li>
- *   <li><b>After execution</b> - Record changes by comparing old and new
- *   data</li>
- *   <li><b>After return</b> - Process the method's return value</li>
- * </ol>
+ * <p>Key characteristics:
+ * <ul>
+ *   <li>Focuses exclusively on method return values for operation recording</li>
+ *   <li>Does not support parameter-based operations (throws {@link NonsupportedOpException})</li>
+ *   <li>Does not support before-execution data capture</li>
+ *   <li>Ideal for query operations, creation operations, or any scenario where
+ *   the return value contains the operation result</li>
+ * </ul>
  *
  * <p>Type Parameters:
  * <ul>
- *   <li><b>N</b> - The type of new data (method arguments)</li>
- *   <li><b>O</b> - The type of old data (captured before execution)</li>
- *   <li><b>R</b> - The type of return data (method return value)</li>
+ *   <li><b>R</b> - The type of return data from method execution</li>
  * </ul>
- *
- * <p>All methods have default implementations that do nothing, allowing
- * implementations to override only the methods they need.
  *
  * <p>Usage example:
  * <pre>
- * public class UserOpStrategy implements OpStrategy&lt;UserDto, User, Boolean&gt; {
+ * public class UserReturnStrategy implements OpReturnStrategy&lt;User&gt; {
  *     &#64;Override
- *     public User beforeAction(UserDto args) {
- *         // Fetch current user data from database
- *         return userRepository.findById(args.getId());
- *     }
- *
- *     &#64;Override
- *     public void afterAction(User oldData, UserDto newData) {
- *         // Compare and log the differences
- *         logChanges(oldData, newData);
+ *     public void afterReturn(User returnData) {
+ *         // Process and record the returned user data
+ *         logUserCreation(returnData);
  *     }
  * }
  * </pre>

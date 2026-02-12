@@ -3,51 +3,47 @@ package io.github.qwzhang01.operating.strategy;
 import io.github.qwzhang01.operating.exception.NonsupportedOpException;
 
 /**
- * Operation Recording Strategy Interface.
+ * Query-based Operation Recording Strategy Interface.
  * <p>
- * This interface defines the contract for custom operation recording
- * strategies.
- * Implementations can customize how operations are captured, compared, and
- * recorded
- * throughout the method execution lifecycle.
+ * This strategy interface specializes in operation recording scenarios that
+ * require querying existing data from external sources (typically databases)
+ * before method execution to capture the current state for comparison.
+ * It extends the base {@link OpStrategy} interface with specific behaviors
+ * for query-intensive operations.
  *
- * <p>The strategy provides hooks at three key points:
- * <ol>
- *   <li><b>Before execution</b> - Capture the current state of data</li>
- *   <li><b>After execution</b> - Record changes by comparing old and new
- *   data</li>
- *   <li><b>After return</b> - Process the method's return value</li>
- * </ol>
+ * <p>Key characteristics:
+ * <ul>
+ *   <li>Requires database queries to fetch current state before execution</li>
+ *   <li>Supports comparison between queried old data and method parameters</li>
+ *   <li>Does not support return value processing (throws {@link NonsupportedOpException})</li>
+ *   <li>Ideal for update operations where current state needs to be compared</li>
+ * </ul>
  *
  * <p>Type Parameters:
  * <ul>
- *   <li><b>N</b> - The type of new data (method arguments)</li>
- *   <li><b>O</b> - The type of old data (captured before execution)</li>
- *   <li><b>R</b> - The type of return data (method return value)</li>
+ *   <li><b>N</b> - The type of new data from method arguments</li>
+ *   <li><b>O</b> - The type of old data queried before method execution</li>
  * </ul>
- *
- * <p>All methods have default implementations that do nothing, allowing
- * implementations to override only the methods they need.
  *
  * <p>Usage example:
  * <pre>
- * public class UserOpStrategy implements OpStrategy&lt;UserDto, User, Boolean&gt; {
+ * public class UserQueryStrategy implements OpNeedQueryStrategy&lt;UserDto, User&gt; {
  *     &#64;Override
  *     public User beforeAction(UserDto args) {
- *         // Fetch current user data from database
+ *         // Query current user data from database
  *         return userRepository.findById(args.getId());
  *     }
  *
  *     &#64;Override
  *     public void afterAction(User oldData, UserDto newData) {
- *         // Compare and log the differences
- *         logChanges(oldData, newData);
+ *         // Compare queried data with new parameters
+ *         logDatabaseChanges(oldData, newData);
  *     }
  * }
  * </pre>
  *
  * @param <N> the type of new data from method arguments
- * @param <O> the type of old data captured before method execution
+ * @param <O> the type of old data queried before method execution
  * @author avinzhang
  */
 public interface OpNeedQueryStrategy<N, O, Void>
