@@ -15,15 +15,6 @@ import java.lang.annotation.Target;
  * It leverages AOP (Aspect-Oriented Programming) to automatically capture
  * operation details before and after method execution.
  *
- * <p>Usage example:
- * <pre>
- * &#64;Op(target = TargetType.class, action = ActionType.class,
- *     strategy = CustomStrategy.class, args = UserDto.class, comparable = true)
- * public void updateUser(UserDto userDto) {
- *     // method implementation
- * }
- * </pre>
- *
  * @author avinzhang
  */
 @Target(ElementType.METHOD)

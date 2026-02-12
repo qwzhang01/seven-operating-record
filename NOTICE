@@ -1,0 +1,31 @@
+Seven Operating Record
+Copyright 2024 avinzhang
+
+This product includes software developed at
+https://github.com/qwzhang01/seven-operating-record
+
+===============================================================================
+第三方依赖声明
+===============================================================================
+
+本项目使用了以下开源软件：
+
+- Spring Boot (https://spring.io/projects/spring-boot)
+  - License: Apache License 2.0
+  - Copyright: Pivotal Software, Inc.
+
+- AspectJ (https://www.eclipse.org/aspectj/)
+  - License: Eclipse Public License 2.0
+  - Copyright: Eclipse Foundation
+
+- JUnit 5 (https://junit.org/junit5/)
+  - License: Eclipse Public License 2.0
+  - Copyright: JUnit Team
+
+- Mockito (https://site.mockito.org/)
+  - License: MIT License
+  - Copyright: Mockito contributors
+
+===============================================================================
+
+有关完整的许可证信息，请参阅LICENSE文件。

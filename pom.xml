@@ -7,6 +7,7 @@
     <groupId>io.github.qwzhang01</groupId>
     <artifactId>seven-operating-record</artifactId>
     <version>1.0.4</version>
+    <packaging>jar</packaging>
 
     <url>https://github.com/qwzhang01/seven-operating-record</url>
 
@@ -34,8 +35,7 @@
 
     <scm>
         <connection>https://github.com/qwzhang01/seven-operating-record.git</connection>
-        <developerConnection>git@github.com:qwzhang01/seven-operating-record.git
-        </developerConnection>
+        <developerConnection>git@github.com:qwzhang01/seven-operating-record.git</developerConnection>
         <url>https://github.com/qwzhang01/seven-operating-record</url>
     </scm>
 
@@ -59,6 +59,8 @@
         <reflection.version>1.2.1</reflection.version>
         <junit.jupiter.version>5.10.3</junit.jupiter.version>
         <mockito.version>5.11.0</mockito.version>
+        <jacoco.version>0.8.11</jacoco.version>
+        <maven-surefire.version>3.4.0</maven-surefire.version>
     </properties>
 
     <dependencyManagement>
@@ -111,7 +113,6 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
             <plugin>
@@ -140,10 +141,33 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>${maven-surefire.version}</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <skipTests>false</skipTests>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
                 </configuration>
+            </plugin>
+            <!-- JaCoCo代码覆盖率插件 -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Maven Central publishing plugin -->
             <plugin>
@@ -207,4 +231,22 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- 项目信息 -->
+    <organization>
+        <name>avinzhang</name>
+        <url>https://github.com/qwzhang01</url>
+    </organization>
+
+    <!-- 问题跟踪 -->
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/qwzhang01/seven-operating-record/issues</url>
+    </issueManagement>
+
+    <!-- 持续集成 -->
+    <ciManagement>
+        <system>GitHub Actions</system>
+        <url>https://github.com/qwzhang01/seven-operating-record/actions</url>
+    </ciManagement>
 </project>
